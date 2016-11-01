@@ -45,6 +45,7 @@ namespace Gelf4NLog.Target
             AddAdditionalField(jsonObject, new KeyValuePair<object, object>("line", logEventInfo.UserStackFrame?.GetFileLineNumber().ToString(CultureInfo.InvariantCulture)));
             AddAdditionalField(jsonObject, new KeyValuePair<object, object>("file", logEventInfo.UserStackFrame?.GetFileName()));
             AddAdditionalField(jsonObject, new KeyValuePair<object, object>("LoggerName", logEventInfo.LoggerName));
+            AddAdditionalField(jsonObject, new KeyValuePair<object, object>("LogLevelName", logEventInfo.Level.ToString()));
 
             //If we are dealing with an exception, add exception properties as additional fields
             if (logEventInfo.Exception != null)
