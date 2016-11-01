@@ -29,10 +29,8 @@ namespace Gelf4NLog.Target
         public IConverter Converter { get; private set; }
         public ITransport Transport { get; private set; }
 
-        public NLogTarget()
+        public NLogTarget() : this(new UdpTransport(new UdpTransportClient()), new GelfConverter())
         {
-            Transport = new UdpTransport(new UdpTransportClient());
-            Converter = new GelfConverter();
         }
 
         public NLogTarget(ITransport transport, IConverter converter)
