@@ -10,7 +10,7 @@ namespace Gelf4NLog.Target
     public class GelfConverter : IConverter
     {
         private const int ShortMessageMaxLength = 250;
-        private const string GelfVersion = "1.0";
+        private const string GelfVersion = "1.1";
 
         public JObject GetGelfJson(LogEventInfo logEventInfo, string facility)
         {
@@ -34,28 +34,23 @@ namespace Gelf4NLog.Target
             }
 
             //Construct the instance of GelfMessage
-            //See https://github.com/Graylog2/graylog2-docs/wiki/GELF "Specification (version 1.0)"
+            //See http://docs.graylog.org/en/2.1/pages/gelf.html?highlight=short%20message#gelf-format-specification "Specification (version 1.1)"
             var gelfMessage = new GelfMessage
-                                  {
-                                      Version = GelfVersion,
-                                      Host = Dns.GetHostName(),
-                                      ShortMessage = shortMessage,
-                                      FullMessage = logEventMessage,
-                                      Timestamp = logEventInfo.TimeStamp,
-                                      Level = GetSeverityLevel(logEventInfo.Level),
-                                      //Spec says: facility must be set by the client to "GELF" if empty
-                                      Facility = (string.IsNullOrEmpty(facility) ? "GELF" : facility),
-                                      Line = (logEventInfo.UserStackFrame != null)
-                                                 ? logEventInfo.UserStackFrame.GetFileLineNumber().ToString(
-                                                     CultureInfo.InvariantCulture)
-                                                 : string.Empty,
-                                      File = (logEventInfo.UserStackFrame != null)
-                                                 ? logEventInfo.UserStackFrame.GetFileName()
-                                                 : string.Empty,
-                                  };
+            {
+                Version = GelfVersion,
+                Host = Dns.GetHostName(),
+                ShortMessage = shortMessage,
+                FullMessage = logEventMessage,
+                Timestamp = logEventInfo.TimeStamp,
+                Level = GetSeverityLevel(logEventInfo.Level)
+            };
 
             //Convert to JSON
             var jsonObject = JObject.FromObject(gelfMessage);
+            
+            AddAdditionalField(jsonObject, new KeyValuePair<object, object>("facility", facility));
+            AddAdditionalField(jsonObject, new KeyValuePair<object, object>("line", logEventInfo.UserStackFrame?.GetFileLineNumber().ToString(CultureInfo.InvariantCulture)));
+            AddAdditionalField(jsonObject, new KeyValuePair<object, object>("file", logEventInfo.UserStackFrame?.GetFileName()));
 
             //Add any other interesting data to LogEventInfo properties
             logEventInfo.Properties.Add("LoggerName", logEventInfo.LoggerName);
