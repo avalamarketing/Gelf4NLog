@@ -16,6 +16,8 @@ namespace Gelf4NLog.Target
 
         public string Facility { get; set; }
 
+        public string Environment { get; set; }
+
         public IConverter Converter { get; private set; }
         public ITransport Transport { get; private set; }
 
@@ -38,7 +40,7 @@ namespace Gelf4NLog.Target
 
         protected override void Write(LogEventInfo logEvent)
         {
-            var jsonObject = Converter.GetGelfJson(logEvent, Facility);
+            var jsonObject = Converter.GetGelfJson(logEvent, Facility, Environment);
             if (jsonObject == null) return;
             Transport.Send(HostIp, HostPort, jsonObject.ToString(Formatting.None, null));
         }
