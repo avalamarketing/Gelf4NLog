@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Net;
+using System.Text;
 using NLog;
 using Newtonsoft.Json.Linq;
 
@@ -43,9 +44,14 @@ namespace Gelf4NLog.Target
             //If we are dealing with an exception, add exception properties as additional fields
             if (logEventInfo.Exception != null)
             {
+                string exceptionDetail;
+                string stackDetail;
+
+                GetExceptionMessages(logEventInfo.Exception, out exceptionDetail, out stackDetail);
+                
                 AddAdditionalField(jsonObject, new KeyValuePair<object, object>("ExceptionSource", logEventInfo.Exception.Source));
-                AddAdditionalField(jsonObject, new KeyValuePair<object, object>("ExceptionMessage", logEventInfo.Exception.Message));
-                AddAdditionalField(jsonObject, new KeyValuePair<object, object>("StackTrace", logEventInfo.Exception.StackTrace));
+                AddAdditionalField(jsonObject, new KeyValuePair<object, object>("ExceptionMessage", exceptionDetail));
+                AddAdditionalField(jsonObject, new KeyValuePair<object, object>("StackTrace", stackDetail));
             }
 
             //We will persist them "Additional Fields" according to Gelf spec
@@ -97,6 +103,36 @@ namespace Gelf4NLog.Target
             }
 
             return 3; //LogLevel.Error
+        }
+
+
+        /// <summary>
+        /// Get the message details from all nested exceptions, up to 10 in depth.
+        /// </summary>
+        /// <param name="ex">Exception to get details for</param>
+        /// <param name="exceptionDetail">Exception message</param>
+        /// <param name="stackDetail">Stacktrace with inner exceptions</param>
+        private void GetExceptionMessages(Exception ex, out string exceptionDetail, out string stackDetail)
+        {
+            var exceptionSb = new StringBuilder();
+            var stackSb = new StringBuilder();
+            var nestedException = ex;
+            stackDetail = null;
+
+            var counter = 0;
+            do
+            {
+                exceptionSb.Append(nestedException.Message + " - ");
+                if (nestedException.StackTrace != null)
+                    stackSb.Append(nestedException.StackTrace + "--- Inner exception stack trace ---");
+                nestedException = nestedException.InnerException;
+                counter++;
+            }
+            while (nestedException != null && counter < 11);
+
+            exceptionDetail = exceptionSb.ToString().Substring(0, exceptionSb.Length - 3);
+            if (stackSb.Length > 0)
+                stackDetail = stackSb.ToString().Substring(0, stackSb.Length - 35);
         }
 
         private static void AddAdditionalField(IDictionary<string, JToken> jObject, KeyValuePair<object, object> property)
