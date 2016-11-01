@@ -18,20 +18,13 @@ namespace Gelf4NLog.Target
             var logEventMessage = logEventInfo.FormattedMessage;
             if (logEventMessage == null) return null;
 
-            //Figure out the short message
-            var shortMessage = logEventMessage;
-            if (shortMessage.Length > ShortMessageMaxLength)
-            {
-                shortMessage = shortMessage.Substring(0, ShortMessageMaxLength);
-            }
-
             //Construct the instance of GelfMessage
             //See http://docs.graylog.org/en/2.1/pages/gelf.html?highlight=short%20message#gelf-format-specification "Specification (version 1.1)"
             var gelfMessage = new GelfMessage
             {
                 Version = GelfVersion,
                 Host = Dns.GetHostName(),
-                ShortMessage = shortMessage,
+                ShortMessage = GetShortMessage(logEventMessage),
                 FullMessage = logEventMessage,
                 Timestamp = logEventInfo.TimeStamp,
                 Level = GetSeverityLevel(logEventInfo.Level)
@@ -64,23 +57,15 @@ namespace Gelf4NLog.Target
             return jsonObject;
         }
 
-        private static void AddAdditionalField(IDictionary<string, JToken> jObject, KeyValuePair<object, object> property)
+        private static string GetShortMessage(string logEventMessage)
         {
-            var key = property.Key as string;
-            var value = property.Value as string;
-
-            if (key == null) return;
-
-            //According to the GELF spec, libraries should NOT allow to send id as additional field (_id)
-            //Server MUST skip the field because it could override the MongoDB _key field
-            if (key.Equals("id", StringComparison.OrdinalIgnoreCase))
-                key = "id_";
-
-            //According to the GELF spec, additional field keys should start with '_' to avoid collision
-            if (!key.StartsWith("_", StringComparison.OrdinalIgnoreCase))
-                key = "_" + key;
-
-            jObject.Add(key, value);
+            //Figure out the short message
+            var shortMessage = logEventMessage;
+            if (shortMessage.Length > ShortMessageMaxLength)
+            {
+                shortMessage = shortMessage.Substring(0, ShortMessageMaxLength);
+            }
+            return shortMessage;
         }
 
         /// <summary>
@@ -112,6 +97,25 @@ namespace Gelf4NLog.Target
             }
 
             return 3; //LogLevel.Error
+        }
+
+        private static void AddAdditionalField(IDictionary<string, JToken> jObject, KeyValuePair<object, object> property)
+        {
+            var key = property.Key as string;
+            var value = property.Value as string;
+
+            if (key == null) return;
+
+            //According to the GELF spec, libraries should NOT allow to send id as additional field (_id)
+            //Server MUST skip the field because it could override the MongoDB _key field
+            if (key.Equals("id", StringComparison.OrdinalIgnoreCase))
+                key = "id_";
+
+            //According to the GELF spec, additional field keys should start with '_' to avoid collision
+            if (!key.StartsWith("_", StringComparison.OrdinalIgnoreCase))
+                key = "_" + key;
+
+            jObject.Add(key, value);
         }
     }
 }
