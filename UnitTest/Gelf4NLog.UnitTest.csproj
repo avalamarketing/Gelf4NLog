@@ -67,10 +67,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="GelfConverterTest.cs" />
+    <Compile Include="GelfConverterTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Resources\ResourceHelper.cs" />
-    <Compile Include="UdpTransportTest.cs" />
+    <Compile Include="UdpTransportTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Target\Gelf4NLog.Target.csproj">
