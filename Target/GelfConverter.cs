@@ -18,14 +18,6 @@ namespace Gelf4NLog.Target
             var logEventMessage = logEventInfo.FormattedMessage;
             if (logEventMessage == null) return null;
 
-            //If we are dealing with an exception, pass exception properties to LogEventInfo properties
-            if (logEventInfo.Exception != null)
-            {
-                logEventInfo.Properties.Add("ExceptionSource", logEventInfo.Exception.Source);
-                logEventInfo.Properties.Add("ExceptionMessage", logEventInfo.Exception.Message);
-                logEventInfo.Properties.Add("StackTrace", logEventInfo.Exception.StackTrace);
-            }
-
             //Figure out the short message
             var shortMessage = logEventMessage;
             if (shortMessage.Length > ShortMessageMaxLength)
@@ -47,13 +39,20 @@ namespace Gelf4NLog.Target
 
             //Convert to JSON
             var jsonObject = JObject.FromObject(gelfMessage);
-            
+
+            //Add any other interesting data to additional fields
             AddAdditionalField(jsonObject, new KeyValuePair<object, object>("facility", facility));
             AddAdditionalField(jsonObject, new KeyValuePair<object, object>("line", logEventInfo.UserStackFrame?.GetFileLineNumber().ToString(CultureInfo.InvariantCulture)));
             AddAdditionalField(jsonObject, new KeyValuePair<object, object>("file", logEventInfo.UserStackFrame?.GetFileName()));
+            AddAdditionalField(jsonObject, new KeyValuePair<object, object>("LoggerName", logEventInfo.LoggerName));
 
-            //Add any other interesting data to LogEventInfo properties
-            logEventInfo.Properties.Add("LoggerName", logEventInfo.LoggerName);
+            //If we are dealing with an exception, add exception properties as additional fields
+            if (logEventInfo.Exception != null)
+            {
+                AddAdditionalField(jsonObject, new KeyValuePair<object, object>("ExceptionSource", logEventInfo.Exception.Source));
+                AddAdditionalField(jsonObject, new KeyValuePair<object, object>("ExceptionMessage", logEventInfo.Exception.Message));
+                AddAdditionalField(jsonObject, new KeyValuePair<object, object>("StackTrace", logEventInfo.Exception.StackTrace));
+            }
 
             //We will persist them "Additional Fields" according to Gelf spec
             foreach (var property in logEventInfo.Properties)
