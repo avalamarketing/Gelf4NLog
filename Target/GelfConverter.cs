@@ -140,7 +140,7 @@ namespace Gelf4NLog.Target
             var key = property.Key as string;
             var value = property.Value as string;
 
-            if (key == null) return;
+            if (key == null || value == null) return;
 
             //According to the GELF spec, libraries should NOT allow to send id as additional field (_id)
             //Server MUST skip the field because it could override the MongoDB _key field
