@@ -22,7 +22,7 @@ namespace Gelf4NLog.Target
             set { endpoint = value != null ? new Uri(System.Environment.ExpandEnvironmentVariables(value)) : null; }
         }
 
-        public string Facility { get; set; }
+        public string Application { get; set; }
 
         public string Environment { get; set; }
 
@@ -53,7 +53,7 @@ namespace Gelf4NLog.Target
 
         protected override void Write(LogEventInfo logEvent)
         {
-            var jsonObject = Converter.GetGelfJson(logEvent, Facility, Environment);
+            var jsonObject = Converter.GetGelfJson(logEvent, Application, Environment);
             if (jsonObject == null) return;
             Transport.Send(lazyIpEndoint.Value, jsonObject.ToString(Formatting.None, null));
         }

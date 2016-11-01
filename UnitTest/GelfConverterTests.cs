@@ -27,12 +27,12 @@ namespace Gelf4NLog.UnitTest
 
             Assert.IsNotNull(jsonObject);
             Assert.AreEqual("1.1", jsonObject.Value<string>("version"));
-            Assert.AreEqual(Dns.GetHostName(), jsonObject.Value<string>("host"));
+            Assert.AreEqual(Dns.GetHostName().ToUpper(), jsonObject.Value<string>("host"));
             Assert.AreEqual("Test Log Message", jsonObject.Value<string>("short_message"));
             Assert.AreEqual("Test Log Message", jsonObject.Value<string>("full_message"));
             Assert.AreEqual(timestamp, jsonObject.Value<DateTime>("timestamp"));
             Assert.AreEqual(6, jsonObject.Value<int>("level"));
-            Assert.AreEqual("TestFacility", jsonObject.Value<string>("_facility"));
+            Assert.AreEqual("TestFacility", jsonObject.Value<string>("_application"));
             Assert.AreEqual("DEV", jsonObject.Value<string>("_environment"));
 
             Assert.AreEqual("customvalue1", jsonObject.Value<string>("_customproperty1"));
@@ -59,7 +59,7 @@ namespace Gelf4NLog.UnitTest
             Assert.AreEqual("Test Message", jsonObject.Value<string>("short_message"));
             Assert.AreEqual("Test Message", jsonObject.Value<string>("full_message"));
             Assert.AreEqual(3, jsonObject.Value<int>("level"));
-            Assert.AreEqual("TestFacility", jsonObject.Value<string>("_facility"));
+            Assert.AreEqual("TestFacility", jsonObject.Value<string>("_application"));
             Assert.AreEqual("DEV", jsonObject.Value<string>("_environment"));
             Assert.AreEqual(null, jsonObject.Value<string>("_ExceptionSource"));
             Assert.AreEqual("div by 0", jsonObject.Value<string>("_ExceptionMessage"));

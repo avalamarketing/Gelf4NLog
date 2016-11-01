@@ -13,7 +13,7 @@ namespace Gelf4NLog.Target
         private const int ShortMessageMaxLength = 250;
         private const string GelfVersion = "1.1";
 
-        public JObject GetGelfJson(LogEventInfo logEventInfo, string facility, string environment)
+        public JObject GetGelfJson(LogEventInfo logEventInfo, string application, string environment)
         {
             //Retrieve the formatted message from LogEventInfo
             var logEventMessage = logEventInfo.FormattedMessage;
@@ -35,7 +35,7 @@ namespace Gelf4NLog.Target
             var jsonObject = JObject.FromObject(gelfMessage);
 
             //Add any other interesting data to additional fields
-            AddAdditionalField(jsonObject, new KeyValuePair<object, object>("facility", facility));
+            AddAdditionalField(jsonObject, new KeyValuePair<object, object>("application", application));
             AddAdditionalField(jsonObject, new KeyValuePair<object, object>("environment", environment));
             AddAdditionalField(jsonObject, new KeyValuePair<object, object>("line", logEventInfo.UserStackFrame?.GetFileLineNumber().ToString(CultureInfo.InvariantCulture)));
             AddAdditionalField(jsonObject, new KeyValuePair<object, object>("file", logEventInfo.UserStackFrame?.GetFileName()));
