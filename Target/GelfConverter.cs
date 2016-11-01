@@ -24,7 +24,7 @@ namespace Gelf4NLog.Target
             var gelfMessage = new GelfMessage
             {
                 Version = GelfVersion,
-                Host = Dns.GetHostName(),
+                Host = Dns.GetHostName().ToUpper(),
                 ShortMessage = GetShortMessage(logEventMessage),
                 FullMessage = logEventMessage,
                 Timestamp = logEventInfo.TimeStamp,
