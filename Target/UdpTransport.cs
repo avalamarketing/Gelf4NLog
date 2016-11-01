@@ -19,22 +19,20 @@ namespace Gelf4NLog.Target
         //Limitation from GrayLog2
         private const int MaxNumberOfChunksAllowed = 128;
 
-        private readonly ITransportClient _transportClient;
+        private readonly ITransportClient transportClient;
         public UdpTransport(ITransportClient transportClient)
         {
-            _transportClient = transportClient;
+            this.transportClient = transportClient;
         }
 
         /// <summary>
         /// Sends a UDP datagram to GrayLog2 server
         /// </summary>
-        /// <param name="serverIpAddress">IP address of the target GrayLog2 server</param>
-        /// <param name="serverPort">Port number of the target GrayLog2 instance</param>
+        /// <param name="target">IP Endpoint of the  of the target GrayLog2 server</param>
         /// <param name="message">Message (in JSON) to log</param>
-        public void Send(string serverIpAddress, int serverPort, string message)
+        public void Send(IPEndPoint target, string message)
         {
-            var ipAddress = IPAddress.Parse(serverIpAddress);
-            var ipEndPoint = new IPEndPoint(ipAddress, serverPort);
+            var ipEndPoint = target;
 
             var compressedMessage = CompressMessage(message);
 
@@ -58,12 +56,12 @@ namespace Gelf4NLog.Target
                     messageChunkHeader.CopyTo(messageChunkFull, 0);
                     messageChunkData.CopyTo(messageChunkFull, messageChunkHeader.Length);
 
-                    _transportClient.Send(messageChunkFull, messageChunkFull.Length, ipEndPoint);
+                    transportClient.Send(messageChunkFull, messageChunkFull.Length, ipEndPoint);
                 }
             }
             else
             {
-                _transportClient.Send(compressedMessage, compressedMessage.Length, ipEndPoint);
+                transportClient.Send(compressedMessage, compressedMessage.Length, ipEndPoint);
             }
         }
 

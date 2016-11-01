@@ -1,7 +1,9 @@
-﻿namespace Gelf4NLog.Target
+﻿using System.Net;
+
+namespace Gelf4NLog.Target
 {
     public interface ITransport
     {
-        void Send(string serverIpAddress, int serverPort, string message);
+        void Send(IPEndPoint target, string message);
     }
 }

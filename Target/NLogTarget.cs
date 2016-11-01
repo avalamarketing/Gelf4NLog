@@ -1,4 +1,8 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Net;
+using System.Net.Sockets;
 using NLog;
 using NLog.Targets;
 using Newtonsoft.Json;
@@ -8,11 +12,15 @@ namespace Gelf4NLog.Target
     [Target("GrayLog")]
     public class NLogTarget : TargetWithLayout
     {
-        [Required]
-        public string HostIp { get; set; }
+        private readonly Lazy<IPEndPoint> lazyIpEndoint;
+        private Uri endpoint;
 
         [Required]
-        public int HostPort { get; set; }
+        public string Endpoint
+        {
+            get { return endpoint.ToString(); }
+            set { endpoint = value != null ? new Uri(System.Environment.ExpandEnvironmentVariables(value)) : null; }
+        }
 
         public string Facility { get; set; }
 
@@ -31,6 +39,13 @@ namespace Gelf4NLog.Target
         {
             Transport = transport;
             Converter = converter;
+            lazyIpEndoint = new Lazy<IPEndPoint>(() =>
+            {
+                var addresses = Dns.GetHostAddresses(endpoint.Host);
+                var ip = addresses.First(x => x.AddressFamily == AddressFamily.InterNetwork);
+
+                return new IPEndPoint(ip, endpoint.Port);
+            });
         }
 
         public void WriteLogEventInfo(LogEventInfo logEvent)
@@ -42,7 +57,7 @@ namespace Gelf4NLog.Target
         {
             var jsonObject = Converter.GetGelfJson(logEvent, Facility, Environment);
             if (jsonObject == null) return;
-            Transport.Send(HostIp, HostPort, jsonObject.ToString(Formatting.None, null));
+            Transport.Send(lazyIpEndoint.Value, jsonObject.ToString(Formatting.None, null));
         }
     }
 }
