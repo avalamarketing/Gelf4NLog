@@ -2,7 +2,7 @@
 Gelf4NLog is an [NLog] target implementation to push log messages to [GrayLog2]. It implements the [Gelf] specification and communicates with GrayLog server via UDP.
 
 ## Solution
-Solution is comprised of 3 projects: *Target* is the actual NLog target implementation, *UnitTest* contains the unit tests for the NLog target, and *ConsoleRunner* is a simple console project created in order to demonstrate the library usage.
+Solution is comprised of 2 projects: *Target* is the actual NLog target implementation, and *UnitTest* contains the unit tests for the NLog target
 ## Usage
 Use Nuget:
 ```
@@ -27,9 +27,9 @@ Here is a sample nlog configuration snippet:
     
 	  <target name="graylog" 
 			  xsi:type="graylog" 
-			  hostip="192.168.1.7" 
-			  hostport="12201" 
-			  facility="console-runner"
+			  endpoint="udp://logs.local:12201" 
+			  application="Secure Oxipay"
+			  environment="PROD"
 	  />
 	</targets>
 
@@ -43,9 +43,9 @@ Here is a sample nlog configuration snippet:
 Options are the following:
 * __name:__ arbitrary name given to the target
 * __type:__ set this to "graylog"
-* __hostip:__ IP address of the GrayLog2 server
-* __hostport:__ Port number that GrayLog2 server is listening on
-* __facility:__ The graylog2 facility to send log messages
+* __endpoint:__ The address of the GrayLog2 server e.g. udp://logs.local:12201
+* __application:__ The application
+* __environment:__ The environment of the application instance
 
 ###Code
 ```c#
@@ -61,8 +61,8 @@ Logger.Log(eventInfo);
 ```
 
 [NLog]: http://nlog-project.org/
-[GrayLog2]: http://graylog2.org/
-[Gelf]: http://graylog2.org/about/gelf
+[GrayLog2]: https://www.graylog.org/
+[Gelf]: http://docs.graylog.org/en/2.1/pages/gelf.html
 
 ##Contributing
-Would you be interested in contributing? All PRs are welcome but also see issue [#12](../../issues/12).
+Would you be interested in contributing? All PRs are welcome.
