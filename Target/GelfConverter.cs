@@ -122,9 +122,9 @@ namespace Gelf4NLog.Target
             var counter = 0;
             do
             {
-                exceptionSb.Append(nestedException.Message + " - ");
+                exceptionSb.Append($"{nestedException.Message} - ");
                 if (nestedException.StackTrace != null)
-                    stackSb.Append(nestedException.StackTrace + "--- Inner exception stack trace ---");
+                    stackSb.Append($"{nestedException.StackTrace}{Environment.NewLine}--- Inner exception stack trace ---{Environment.NewLine}");
                 nestedException = nestedException.InnerException;
                 counter++;
             }
