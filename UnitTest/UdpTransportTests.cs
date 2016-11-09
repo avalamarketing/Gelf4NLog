@@ -4,14 +4,13 @@ using Gelf4NLog.UnitTest.Resources;
 using Moq;
 using Newtonsoft.Json.Linq;
 using NLog;
-using NUnit.Framework;
+using Xunit;
 
 namespace Gelf4NLog.UnitTest
 {
-    [TestFixture]
     public class UdpTransportTests
     {
-        [Test]
+        [Fact]
         public void ShouldSendLongUdpMessage()
         {
             var jsonObject = new JObject();
@@ -37,7 +36,7 @@ namespace Gelf4NLog.UnitTest
                 Times.Once());
         }
 
-        [Test]
+        [Fact]
         public void ShouldSendShortUdpMessage()
         {
             var transportClient = new Mock<ITransportClient>();

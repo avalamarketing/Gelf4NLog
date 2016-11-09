@@ -2,14 +2,13 @@
 using System.Net;
 using Gelf4NLog.Target;
 using NLog;
-using NUnit.Framework;
+using Xunit;
 
 namespace Gelf4NLog.UnitTest
 {
-    [TestFixture(Category = "GelfConverter")]
     public class GelfConverterTests
     {
-        [Test]
+        [Fact]
         public void ShouldCreateGelfJsonCorrectly()
         {
             var timestamp = DateTime.Now;
@@ -25,26 +24,26 @@ namespace Gelf4NLog.UnitTest
 
             var jsonObject = new GelfConverter().GetGelfJson(logEvent, "TestFacility", "DEV");
 
-            Assert.IsNotNull(jsonObject);
-            Assert.AreEqual("1.1", jsonObject.Value<string>("version"));
-            Assert.AreEqual(Dns.GetHostName().ToUpper(), jsonObject.Value<string>("host"));
-            Assert.AreEqual("Test Log Message", jsonObject.Value<string>("short_message"));
-            Assert.AreEqual("Test Log Message", jsonObject.Value<string>("full_message"));
-            Assert.AreEqual(timestamp, jsonObject.Value<DateTime>("timestamp"));
-            Assert.AreEqual(6, jsonObject.Value<int>("level"));
-            Assert.AreEqual("TestFacility", jsonObject.Value<string>("_application"));
-            Assert.AreEqual("DEV", jsonObject.Value<string>("_environment"));
+            Assert.NotNull(jsonObject);
+            Assert.Equal("1.1", jsonObject.Value<string>("version"));
+            Assert.Equal(Dns.GetHostName().ToUpper(), jsonObject.Value<string>("host"));
+            Assert.Equal("Test Log Message", jsonObject.Value<string>("short_message"));
+            Assert.Equal("Test Log Message", jsonObject.Value<string>("full_message"));
+            Assert.Equal(timestamp, jsonObject.Value<DateTime>("timestamp"));
+            Assert.Equal(6, jsonObject.Value<int>("level"));
+            Assert.Equal("TestFacility", jsonObject.Value<string>("_application"));
+            Assert.Equal("DEV", jsonObject.Value<string>("_environment"));
 
-            Assert.AreEqual("customvalue1", jsonObject.Value<string>("_customproperty1"));
-            Assert.AreEqual("customvalue2", jsonObject.Value<string>("_customproperty2"));
-            Assert.AreEqual("GelfConverterTestLogger", jsonObject.Value<string>("_LoggerName"));
-            Assert.AreEqual("Info", jsonObject.Value<string>("_LogLevelName"));
+            Assert.Equal("customvalue1", jsonObject.Value<string>("_customproperty1"));
+            Assert.Equal("customvalue2", jsonObject.Value<string>("_customproperty2"));
+            Assert.Equal("GelfConverterTestLogger", jsonObject.Value<string>("_LoggerName"));
+            Assert.Equal("Info", jsonObject.Value<string>("_LogLevelName"));
 
             //make sure that there are no other junk in there
-            Assert.AreEqual(12, jsonObject.Count);
+            Assert.Equal(12, jsonObject.Count);
         }
 
-        [Test]
+        [Fact]
         public void ShouldHandleExceptionsCorrectly()
         {
             var logEvent = new LogEventInfo
@@ -55,19 +54,19 @@ namespace Gelf4NLog.UnitTest
 
             var jsonObject = new GelfConverter().GetGelfJson(logEvent, "TestFacility", "DEV");
 
-            Assert.IsNotNull(jsonObject);
-            Assert.AreEqual("Test Message", jsonObject.Value<string>("short_message"));
-            Assert.AreEqual("Test Message", jsonObject.Value<string>("full_message"));
-            Assert.AreEqual(3, jsonObject.Value<int>("level"));
-            Assert.AreEqual("TestFacility", jsonObject.Value<string>("_application"));
-            Assert.AreEqual("DEV", jsonObject.Value<string>("_environment"));
-            Assert.AreEqual(null, jsonObject.Value<string>("_ExceptionSource"));
-            Assert.AreEqual("div by 0", jsonObject.Value<string>("_ExceptionMessage"));
-            Assert.AreEqual(null, jsonObject.Value<string>("_StackTrace"));
-            Assert.AreEqual(null, jsonObject.Value<string>("_LoggerName"));
+            Assert.NotNull(jsonObject);
+            Assert.Equal("Test Message", jsonObject.Value<string>("short_message"));
+            Assert.Equal("Test Message", jsonObject.Value<string>("full_message"));
+            Assert.Equal(3, jsonObject.Value<int>("level"));
+            Assert.Equal("TestFacility", jsonObject.Value<string>("_application"));
+            Assert.Equal("DEV", jsonObject.Value<string>("_environment"));
+            Assert.Equal(null, jsonObject.Value<string>("_ExceptionSource"));
+            Assert.Equal("div by 0", jsonObject.Value<string>("_ExceptionMessage"));
+            Assert.Equal(null, jsonObject.Value<string>("_StackTrace"));
+            Assert.Equal(null, jsonObject.Value<string>("_LoggerName"));
         }
 
-        [Test]
+        [Fact]
         public void ShouldHandleLongMessageCorrectly()
         {
             var logEvent = new LogEventInfo
@@ -79,12 +78,12 @@ namespace Gelf4NLog.UnitTest
 
             var jsonObject = new GelfConverter().GetGelfJson(logEvent, "TestFacility", "DEV");
 
-            Assert.IsNotNull(jsonObject);
-            Assert.AreEqual(250, jsonObject.Value<string>("short_message").Length);
-            Assert.AreEqual(300, jsonObject.Value<string>("full_message").Length);
+            Assert.NotNull(jsonObject);
+            Assert.Equal(250, jsonObject.Value<string>("short_message").Length);
+            Assert.Equal(300, jsonObject.Value<string>("full_message").Length);
         }
 
-        [Test]
+        [Fact]
         public void ShouldHandlePropertyCalledIdProperly()
         {
             var logEvent = new LogEventInfo {Message = "Test"};
@@ -92,9 +91,9 @@ namespace Gelf4NLog.UnitTest
 
             var jsonObject = new GelfConverter().GetGelfJson(logEvent, "TestFacility", "DEV");
 
-            Assert.IsNotNull(jsonObject);
-            Assert.IsNull(jsonObject["_id"]);
-            Assert.AreEqual("not_important", jsonObject.Value<string>("_id_"));
+            Assert.NotNull(jsonObject);
+            Assert.Null(jsonObject["_id"]);
+            Assert.Equal("not_important", jsonObject.Value<string>("_id_"));
         }
     }
 }
