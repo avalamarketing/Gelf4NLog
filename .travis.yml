@@ -1,0 +1,13 @@
+language: csharp
+solution: Gelf4NLog.sln
+install:
+  - nuget restore Gelf4NLog.sln
+  - nuget install NUnit.Runners -Version 2.6.4 -OutputDirectory testrunner
+script:
+  - xbuild /p:Configuration=Release Gelf4NLog.sln
+  - mono ./testrunner/NUnit.Runners.2.6.4/tools/nunit-console.exe ./UnitTest/bin/Release/Gelf4NLog.UnitTest.dll
+notifications:
+  email:
+    - devadmin@certegy.com.au
+    - ryan.bartsch@certegy.com.au
+  slack: certegy:XpbQ5CcsAndkjqmE2szCZty9
