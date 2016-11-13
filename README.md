@@ -1,4 +1,5 @@
-# Gelf4NLog
+# Gelf4NLog [![Build status](https://ci.appveyor.com/api/projects/status/pb6q928iay96pyop?svg=true)](https://ci.appveyor.com/project/Certegy/gelf4nlog) [![Coverage Status](https://coveralls.io/repos/github/Certegy/Gelf4NLog/badge.svg?branch=master)](https://coveralls.io/github/Certegy/Gelf4NLog?branch=master)
+
 Gelf4NLog is an [NLog] target implementation to push log messages to [GrayLog2]. It implements the [Gelf] specification and communicates with GrayLog server via UDP.
 
 ## Solution

@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>Gelf4NLog.Target</id>
-    <version>1.1.0</version>
+    <version>$version$</version>
     <title>Gelf4NLog.Target</title>
     <authors>Ryan Bartsch</authors>
     <owners>Certegy</owners>
