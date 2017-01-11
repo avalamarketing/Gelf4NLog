@@ -29,7 +29,7 @@ Here is a sample nlog configuration snippet:
 	  <target name="graylog" 
 			  xsi:type="graylog" 
 			  endpoint="udp://logs.local:12201" 
-			  application="Secure Oxipay"
+			  application="MyApp"
 			  environment="PROD"
 	  />
 	</targets>
@@ -45,7 +45,10 @@ It is possible to redact sensitive information from each log entry using redacti
 
 ```xml
 <targets>
-	<target name="graylog" xsi:type="graylog" endpoint="udp://logs.local:12201" application="Secure Oxipay" environment="PROD">
+	<target name="graylog" 
+		xsi:type="graylog" 
+		endpoint="udp://logs.local:12201" 
+		application="MyApp" environment="PROD">
 		<redact pattern="4[0-9]{12}(?:[0-9]{3})?" replacement="_REDACTED_" />
 		<redact pattern="TEST" replacement="****" />
 	</target>
