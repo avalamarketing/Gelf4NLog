@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System.Collections.Generic;
+using System.Net;
 using Gelf4NLog.Target;
 using Gelf4NLog.UnitTest.Resources;
 using Moq;
@@ -19,7 +20,7 @@ namespace Gelf4NLog.UnitTest
             jsonObject.Add("full_message", JToken.FromObject(message));
 
             var converter = new Mock<IConverter>();
-            converter.Setup(c => c.GetGelfJson(It.IsAny<LogEventInfo>(), It.IsAny<string>(), It.IsAny<string>()))
+            converter.Setup(c => c.GetGelfJson(It.IsAny<LogEventInfo>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IList<RedactInfo>>()))
                 .Returns(jsonObject)
                 .Verifiable();
             var transportClient = new Mock<ITransportClient>();
@@ -32,7 +33,7 @@ namespace Gelf4NLog.UnitTest
 
             transportClient.Verify(t => t.Send(It.IsAny<byte[]>(), It.IsAny<int>(), It.IsAny<IPEndPoint>()),
                 Times.Exactly(2));
-            converter.Verify(c => c.GetGelfJson(It.IsAny<LogEventInfo>(), It.IsAny<string>(), It.IsAny<string>()),
+            converter.Verify(c => c.GetGelfJson(It.IsAny<LogEventInfo>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IList<RedactInfo>>()),
                 Times.Once());
         }
 
@@ -42,7 +43,7 @@ namespace Gelf4NLog.UnitTest
             var transportClient = new Mock<ITransportClient>();
             var transport = new UdpTransport(transportClient.Object);
             var converter = new Mock<IConverter>();
-            converter.Setup(c => c.GetGelfJson(It.IsAny<LogEventInfo>(), It.IsAny<string>(), It.IsAny<string>()))
+            converter.Setup(c => c.GetGelfJson(It.IsAny<LogEventInfo>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IList<RedactInfo>>()))
                 .Returns(new JObject());
 
             var target = new NLogTarget(transport, converter.Object) {Endpoint = "udp://localhost:12201"};
@@ -52,7 +53,7 @@ namespace Gelf4NLog.UnitTest
 
             transportClient.Verify(t => t.Send(It.IsAny<byte[]>(), It.IsAny<int>(), It.IsAny<IPEndPoint>()),
                 Times.Once());
-            converter.Verify(c => c.GetGelfJson(It.IsAny<LogEventInfo>(), It.IsAny<string>(), It.IsAny<string>()),
+            converter.Verify(c => c.GetGelfJson(It.IsAny<LogEventInfo>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IList<RedactInfo>>()),
                 Times.Once());
         }
     }

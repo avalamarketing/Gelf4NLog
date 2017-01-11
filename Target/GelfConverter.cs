@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Net;
 using System.Text;
+using System.Text.RegularExpressions;
 using NLog;
 using Newtonsoft.Json.Linq;
 
@@ -13,10 +15,12 @@ namespace Gelf4NLog.Target
         private const int ShortMessageMaxLength = 250;
         private const string GelfVersion = "1.1";
 
-        public JObject GetGelfJson(LogEventInfo logEventInfo, string application, string environment)
+        public JObject GetGelfJson(LogEventInfo logEventInfo, string application, string environment, IList<RedactInfo> redactions)
         {
             //Retrieve the formatted message from LogEventInfo
-            var logEventMessage = logEventInfo.FormattedMessage;
+            var logEventMessage = redactions.Aggregate(logEventInfo.FormattedMessage,
+                (current, redaction) => redaction.LazyRegex.Value.Replace(current, redaction.Replacement));
+
             if (logEventMessage == null) return null;
 
             //Construct the instance of GelfMessage

@@ -1,10 +1,11 @@
-﻿using NLog;
+﻿using System.Collections.Generic;
+using NLog;
 using Newtonsoft.Json.Linq;
 
 namespace Gelf4NLog.Target
 {
     public interface IConverter
     {
-        JObject GetGelfJson(LogEventInfo logEventInfo, string application, string environment);
+        JObject GetGelfJson(LogEventInfo logEventInfo, string application, string environment, IList<RedactInfo> redactions);
     }
 }
