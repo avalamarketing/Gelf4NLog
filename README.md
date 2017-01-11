@@ -40,6 +40,17 @@ Here is a sample nlog configuration snippet:
 
 </nlog>
 ```
+### Redacting sensitive log information
+It is possible to redact sensitive information from each log entry using redaction regular expressions:
+
+```xml
+<targets>
+	<target name="graylog" xsi:type="graylog" endpoint="udp://logs.local:12201" application="Secure Oxipay" environment="PROD">
+		<redact pattern="4[0-9]{12}(?:[0-9]{3})?" replacement="_REDACTED_" />
+		<redact pattern="TEST" replacement="****" />
+	</target>
+</targets>
+```
 
 Options are the following:
 * __name:__ arbitrary name given to the target
