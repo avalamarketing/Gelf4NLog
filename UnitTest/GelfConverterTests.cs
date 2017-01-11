@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using Gelf4NLog.Target;
 using NLog;
@@ -22,7 +23,7 @@ namespace Gelf4NLog.UnitTest
             logEvent.Properties.Add("customproperty1", "customvalue1");
             logEvent.Properties.Add("customproperty2", "customvalue2");
 
-            var jsonObject = new GelfConverter().GetGelfJson(logEvent, "TestFacility", "DEV");
+            var jsonObject = new GelfConverter().GetGelfJson(logEvent, "TestFacility", "DEV", new List<RedactInfo>());
 
             Assert.NotNull(jsonObject);
             Assert.Equal("1.1", jsonObject.Value<string>("version"));
@@ -52,7 +53,7 @@ namespace Gelf4NLog.UnitTest
                 Exception = new DivideByZeroException("div by 0")
             };
 
-            var jsonObject = new GelfConverter().GetGelfJson(logEvent, "TestFacility", "DEV");
+            var jsonObject = new GelfConverter().GetGelfJson(logEvent, "TestFacility", "DEV", new List<RedactInfo>());
 
             Assert.NotNull(jsonObject);
             Assert.Equal("Test Message", jsonObject.Value<string>("short_message"));
@@ -76,7 +77,7 @@ namespace Gelf4NLog.UnitTest
                     "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus interdum est in est cursus vitae pellentesque felis lobortis. Donec a orci quis ante viverra eleifend ac et quam. Donec imperdiet libero ut justo tincidunt non tristique mauris gravida. Fusce sapien eros, tincidunt a placerat nullam."
             };
 
-            var jsonObject = new GelfConverter().GetGelfJson(logEvent, "TestFacility", "DEV");
+            var jsonObject = new GelfConverter().GetGelfJson(logEvent, "TestFacility", "DEV", new List<RedactInfo>());
 
             Assert.NotNull(jsonObject);
             Assert.Equal(250, jsonObject.Value<string>("short_message").Length);
@@ -89,11 +90,32 @@ namespace Gelf4NLog.UnitTest
             var logEvent = new LogEventInfo {Message = "Test"};
             logEvent.Properties.Add("Id", "not_important");
 
-            var jsonObject = new GelfConverter().GetGelfJson(logEvent, "TestFacility", "DEV");
+            var jsonObject = new GelfConverter().GetGelfJson(logEvent, "TestFacility", "DEV", new List<RedactInfo>());
 
             Assert.NotNull(jsonObject);
             Assert.Null(jsonObject["_id"]);
             Assert.Equal("not_important", jsonObject.Value<string>("_id_"));
+        }
+
+        [Fact]
+        public void ShouldRedactCreditCardNumber()
+        {
+            var logEvent = new LogEventInfo { Message = "Test 4111111111111111 Test" };
+            logEvent.Properties.Add("Id", "not_important");
+
+            var redactInfos = new List<RedactInfo>
+            {
+                new RedactInfo
+                {
+                    Pattern = "4[0-9]{12}(?:[0-9]{3})?",
+                    Replacement = "REDACTED"
+                }
+            };
+
+            var jsonObject = new GelfConverter().GetGelfJson(logEvent, "TestFacility", "DEV", redactInfos);
+
+            Assert.Equal("Test REDACTED Test", jsonObject.Value<string>("short_message"));
+            Assert.Equal("Test REDACTED Test", jsonObject.Value<string>("full_message"));
         }
     }
 }

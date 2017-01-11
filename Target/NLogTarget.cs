@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Net;
@@ -6,6 +7,7 @@ using System.Net.Sockets;
 using NLog;
 using NLog.Targets;
 using Newtonsoft.Json;
+using NLog.Config;
 
 namespace Gelf4NLog.Target
 {
@@ -15,7 +17,7 @@ namespace Gelf4NLog.Target
         private readonly Lazy<IPEndPoint> lazyIpEndoint;
         private Uri endpoint;
 
-        [Required]
+        [RequiredParameter]
         public string Endpoint
         {
             get { return endpoint.ToString(); }
@@ -26,6 +28,9 @@ namespace Gelf4NLog.Target
 
         public string Environment { get; set; }
 
+        [ArrayParameter(typeof(RedactInfo), "redact")]
+        public IList<RedactInfo> Redactions { get; set; }
+
         public IConverter Converter { get; private set; }
         public ITransport Transport { get; private set; }
 
@@ -35,6 +40,7 @@ namespace Gelf4NLog.Target
 
         public NLogTarget(ITransport transport, IConverter converter)
         {
+            Redactions = new List<RedactInfo>();
             Transport = transport;
             Converter = converter;
             lazyIpEndoint = new Lazy<IPEndPoint>(() =>
@@ -53,7 +59,7 @@ namespace Gelf4NLog.Target
 
         protected override void Write(LogEventInfo logEvent)
         {
-            var jsonObject = Converter.GetGelfJson(logEvent, Application, Environment);
+            var jsonObject = Converter.GetGelfJson(logEvent, Application, Environment, Redactions);
             if (jsonObject == null) return;
             Transport.Send(lazyIpEndoint.Value, jsonObject.ToString(Formatting.None, null));
         }
