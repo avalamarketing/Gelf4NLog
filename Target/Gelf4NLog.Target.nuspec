@@ -5,8 +5,8 @@
     <version>$version$</version>
     <title>Gelf4NLog.Target</title>
     <authors>Ryan Bartsch</authors>
-    <owners>Certegy</owners>
-    <projectUrl>https://github.com/oxipay/Gelf4NLog</projectUrl>
+    <owners>Avala</owners>
+    <projectUrl>https://github.com/avalamarketing/Gelf4NLog</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>NLog target for Graylog</description>
     <dependencies>
