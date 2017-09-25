@@ -61,7 +61,7 @@ namespace Gelf4NLog.Target
         {
             var jsonObject = Converter.GetGelfJson(logEvent, Application, Environment, Redactions);
             if (jsonObject == null) return;
-            Transport.Send(lazyIpEndoint.Value, jsonObject.ToString(Formatting.None, null));
+            Transport.Send(lazyIpEndoint.Value, jsonObject.ToString(Formatting.None, new GelfJsonStringConverter()));
         }
     }
 }

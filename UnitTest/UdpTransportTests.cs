@@ -11,7 +11,7 @@ namespace Gelf4NLog.UnitTest
 {
     public class UdpTransportTests
     {
-        [Fact]
+        [Fact (Skip = "Test will fail because serialization now prohibits fields longer than 32k since graylog will not index them")]
         public void ShouldSendLongUdpMessage()
         {
             var jsonObject = new JObject();
