@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Net;
 using Gelf4NLog.Target;
+using Gelf4NLog.Target.Extensions;
 using NLog;
 using Xunit;
 
@@ -30,7 +31,7 @@ namespace Gelf4NLog.UnitTest
             Assert.Equal(Dns.GetHostName().ToUpper(), jsonObject.Value<string>("host"));
             Assert.Equal("Test Log Message", jsonObject.Value<string>("short_message"));
             Assert.Equal("Test Log Message", jsonObject.Value<string>("full_message"));
-            Assert.Equal(timestamp, jsonObject.Value<DateTime>("timestamp"));
+            Assert.Equal(timestamp.ToUnixTimestamp(), jsonObject.Value<Decimal>("timestamp"));
             Assert.Equal(6, jsonObject.Value<int>("level"));
             Assert.Equal("TestFacility", jsonObject.Value<string>("_application"));
             Assert.Equal("DEV", jsonObject.Value<string>("_environment"));

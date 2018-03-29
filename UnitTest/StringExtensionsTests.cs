@@ -1,4 +1,5 @@
 ﻿using Gelf4NLog.Target;
+using Gelf4NLog.Target.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;

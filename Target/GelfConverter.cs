@@ -7,6 +7,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using NLog;
 using Newtonsoft.Json.Linq;
+using Gelf4NLog.Target.Extensions;
 
 namespace Gelf4NLog.Target
 {
@@ -31,7 +32,7 @@ namespace Gelf4NLog.Target
                 Host = Dns.GetHostName().ToUpper(),
                 ShortMessage = GetShortMessage(logEventMessage),
                 FullMessage = logEventMessage,
-                Timestamp = logEventInfo.TimeStamp,
+                Timestamp = logEventInfo.TimeStamp.ToUnixTimestamp(),
                 Level = GetSeverityLevel(logEventInfo.Level)
             };
 
@@ -108,6 +109,8 @@ namespace Gelf4NLog.Target
 
             return 3; //LogLevel.Error
         }
+
+        
 
 
         /// <summary>

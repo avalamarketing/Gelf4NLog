@@ -19,7 +19,7 @@ namespace Gelf4NLog.Target
         public string FullMessage { get; set; }
 
         [JsonProperty("timestamp")]
-        public DateTime Timestamp { get; set; }
+        public decimal Timestamp { get; set; }
 
         [JsonProperty("level")]
         public int Level { get; set; }

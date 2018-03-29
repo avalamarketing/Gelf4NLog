@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using Gelf4NLog.Target.Extensions;
 
 namespace Gelf4NLog.Target
 {

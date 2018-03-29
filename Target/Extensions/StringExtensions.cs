@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Gelf4NLog.Target
+namespace Gelf4NLog.Target.Extensions
 {
     public static class StringExtensions
     {
