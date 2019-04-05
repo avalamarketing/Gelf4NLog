@@ -145,7 +145,7 @@ namespace Gelf4NLog.Target
         private static void AddAdditionalField(IDictionary<string, JToken> jObject, KeyValuePair<object, object> property)
         {
             var key = property.Key as string;
-            var value = property.Value as string;
+            var value = property.Value;
 
             if (key == null || value == null) return;
 
@@ -158,7 +158,10 @@ namespace Gelf4NLog.Target
             if (!key.StartsWith("_", StringComparison.OrdinalIgnoreCase))
                 key = "_" + key;
 
-            jObject.Add(key, value);
+            if (value is string str)
+                jObject.Add(key, str);
+            if (value is int i)
+                jObject.Add(key, i);
         }
     }
 }
